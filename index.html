@@ -6,18 +6,23 @@
   </head>
   <body>
     <h1>Calorie burner</h1>
-    <h2>Burn calories!</h2>
+    <h2 id="result">Burn calories!</h2>
+    <button id="burn">Burn</button>
   </body>
 </html>
 <script>
+  Number.prototype.round = function(places) {
+      return +(Math.round(this + "e+" + places)  + "e-" + places);
+  }
+
   const createStore = (reducer, initialState) => {
-    state = initialState;
+    let state = initialState;
     let updater = () => {};
     const getState = () => state;
 
     const dispatch = (action) => {
       state = reducer(state, action);
-      updater()
+      updater();
     };
 
     const subscribe = (listener) => {
@@ -32,14 +37,29 @@
   };
 
   const reducer = (state, action) => {
+    console.log('action ', state, action)
+    switch (action.type) {
+      case "BURN":
+        return state + action.payload;
+      case "default":
+        return state;
+    }
+    console.log(action);
     return action;
   };
 
-  const store = createStore(reducer, "Initial state of app");
+  const store = createStore(reducer, 0);
 
   store.subscribe(() => {
-    console.log("Something has changed in store", store.getState());
+    window.result.textContent = `You have burned ${store.getState().round(2)} calories`
   });
 
-  store.dispatch("I'm going to change something");
+  const burn = () => {
+    store.dispatch({
+      type: "BURN",
+      payload: 1.42,
+    });
+  };
+
+  window.burn.addEventListener("click", burn);
 </script>
