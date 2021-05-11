@@ -7,6 +7,7 @@
   <body>
     <h1>Calorie burner</h1>
     <h2 id="result">Burn calories!</h2>
+    <h2 id="result2"></h2>
     <button id="burn">Burn</button>
   </body>
 </html>
@@ -37,15 +38,12 @@
   };
 
   const reducer = (state, action) => {
-    console.log('action ', state, action)
     switch (action.type) {
       case "BURN":
         return state + action.payload;
       case "default":
         return state;
     }
-    console.log(action);
-    return action;
   };
 
   const store = createStore(reducer, 0);
@@ -54,12 +52,36 @@
     window.result.textContent = `You have burned ${store.getState().round(2)} calories`
   });
 
+  const cokeCalories = 97000
+
+  const reducerClicks = (state, action) => {
+    switch (action.type) {
+      case "BURN":
+        return state > 0 ? state - action.payload : 0;
+      case "default":
+        return state;
+    }
+  }
+
+  const storeClicks = createStore(reducerClicks, Math.floor(cokeCalories / 1.42))
+
+  storeClicks.subscribe(() => {
+    window.result2.textContent = `You need ${storeClicks.getState()} clicks to burn the calories of a coke`
+  });
+ 
   const burn = () => {
     store.dispatch({
       type: "BURN",
       payload: 1.42,
     });
+
+    storeClicks.dispatch({
+      type: "BURN",
+      payload: 1,
+    });
   };
 
+
+  window.result2.textContent = `You need ${storeClicks.getState()} clicks to burn the calories of a coke`
   window.burn.addEventListener("click", burn);
 </script>
